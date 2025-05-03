@@ -1,0 +1,44 @@
+
+# Netlify configuration file
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+# Force HTTPS and add security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Content-Security-Policy = "upgrade-insecure-requests"
+
+# Handle 404 errors with custom page
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Ensure domain customization
+[[plugins]]
+  package = "@netlify/plugin-sitemap"
+
+# Set environment variables
+[build.environment]
+  NETLIFY_USE_YARN = "true"
+
+# Force primary domain - updated for SSL compatibility
+[[redirects]]
+  from = "https://dailynumberquest.netlify.app/*"
+  to = "https://dailynumberquest.com/:splat"
+  status = 301
+  force = true
+
+# Force HTTPS for all requests
+[[redirects]]
+  from = "http://*"
+  to = "https://:splat"
+  status = 301
+  force = true
