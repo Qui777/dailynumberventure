@@ -1,32 +1,36 @@
-// paymentUtils.ts
+export async function createPayPalOrder(amount: number) {
+  try {
+    const response = await fetch('/api/paypal/create-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ amount }),
+    });
 
-export function loadPayPalScript(clientId: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    if ((window as any).paypal) {
-      resolve();
-      return;
-    }
+    const data = await response.json();
+    return data.orderID;
+  } catch (error) {
+    console.error('Error creating PayPal order:', error);
+    throw error;
+  }
+}
 
-    const existingScript = document.getElementById('paypal-sdk');
-    if (existingScript) {
-      existingScript.addEventListener('load', () => resolve());
-      return;
-    }
+export async function capturePayPalPayment(orderID: string) {
+  try {
+    const response = await fetch('/api/paypal/capture-order', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ orderID }),
+    });
 
-    const script = document.createElement('script');
-    script.id = 'paypal-sdk';
-    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
-    script.onload = () => {
-      if ((window as any).paypal) {
-        resolve();
-      } else {
-        reject(new Error('PayPal SDK loaded but window.paypal is undefined'));
-      }
-    };
-    script.onerror = () => {
-      reject(new Error('Failed to load PayPal SDK'));
-    };
-    document.body.appendChild(script);
-  });
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error capturing PayPal payment:', error);
+    throw error;
+  }
 }
 
