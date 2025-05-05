@@ -1,6 +1,7 @@
 import React from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { showPaymentSuccessToast, showPaymentErrorToast } from '@/utils/paymentToastUtils';
+import { loadPayPalScript } from '@/utils/paymentUtils';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -17,6 +18,18 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   email,
   selectedRange,
 }) => {
+
+  useEffect(() => {
+    loadPayPalScript(import.meta.env.VITE_PAYPAL_CLIENT_ID)
+      .then(() => {
+        console.log('✅ PayPal SDK loaded');
+      })
+      .catch((err) => {
+        console.error('❌ PayPal failed to load:', err);
+        showPaymentErrorToast(null);
+      });
+  }, []);
+  
   if (!isOpen) return null;
 
   const amount = '2.00'; // Set to your amount
@@ -53,6 +66,34 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
           />
         </PayPalScriptProvider>
+        <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID }}>
+  <PayPalButtons
+    style={{ layout: 'vertical' }}
+    createOrder={(data, actions) => {
+      return actions.order.create({
+        purchase_units: [{
+          amount: {
+            value: '2.00',
+          },
+        }],
+      });
+    }}
+    onApprove={(data, actions) => {
+      return actions.order!.capture().then(() => {
+        showPaymentSuccessToast(null);
+        onClose();
+      });
+    }}
+    onError={(err) => {
+      console.error('❌ Payment error:', err);
+      showPaymentErrorToast(null);
+    }}
+  />
+</PayPalScriptProvider>
+
+<button className="mt-4 text-sm text-gray-500" onClick={onClose}>
+  Cancel
+</button>
 
         <button className="mt-4 text-sm text-gray-500" onClick={onClose}>
           Cancel
