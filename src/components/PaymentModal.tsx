@@ -1,10 +1,6 @@
-import React, { useEffect } from 'react';
-import { PayPalButtons } from '@paypal/react-paypal-js';
-import { loadPayPalScript } from '@/utils/paymentUtils';
-import {
-  showPaymentSuccessToast,
-  showPaymentErrorToast,
-} from '@/utils/paymentToastUtils';
+import React from 'react';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import { showPaymentSuccessToast, showPaymentErrorToast } from '@/utils/paymentToastUtils';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -23,54 +19,42 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const amount = 5.0;
-
-  useEffect(() => {
-    loadPayPalScript(import.meta.env.VITE_PAYPAL_CLIENT_ID)
-      .then(() => {
-        console.log('✅ PayPal SDK loaded');
-      })
-      .catch((err) => {
-        console.error('❌ PayPal failed to load:', err);
-        showPaymentErrorToast(null);
-      });
-  }, []);
-
-  const handleApprove = (data: any, actions: any) => {
-    return actions.order.capture().then(() => {
-      showPaymentSuccessToast(null);
-      onClose();
-    });
-  };
-
-  const handleError = (err: any) => {
-    console.error('❌ Payment error:', err);
-    showPaymentErrorToast(null);
-  };
+  const amount = '2.00'; // Set to your amount
+  const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded shadow">
-        <h2 className="text-xl font-bold mb-4">Secure Payment</h2>
-        <PayPalButtons
-          createOrder={(data, actions) => {
-            return actions.order.create({
-              purchase_units: [
-                {
-                  amount: {
-                    value: amount.toFixed(2),
+      <div className="bg-white p-6 rounded shadow max-w-sm w-full">
+        <h2 className="text-lg font-bold mb-4">Secure Payment</h2>
+        <p className="mb-2">Name: {username}</p>
+        <p className="mb-4">Email: {email}</p>
+
+        <PayPalScriptProvider options={{ clientId }}>
+          <PayPalButtons
+            style={{ layout: 'vertical' }}
+            createOrder={(data, actions) => {
+              return actions.order.create({
+                purchase_units: [
+                  {
+                    amount: { value: amount },
                   },
-                },
-              ],
-            });
-          }}
-          onApprove={handleApprove}
-          onError={handleError}
-        />
-        <button
-          className="mt-4 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
-          onClick={onClose}
-        >
+                ],
+              });
+            }}
+            onApprove={(data, actions) => {
+              return actions.order.capture().then(() => {
+                showPaymentSuccessToast(null);
+                onClose();
+              });
+            }}
+            onError={(err) => {
+              console.error('Payment error:', err);
+              showPaymentErrorToast(null);
+            }}
+          />
+        </PayPalScriptProvider>
+
+        <button className="mt-4 text-sm text-gray-500" onClick={onClose}>
           Cancel
         </button>
       </div>
@@ -79,4 +63,5 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
 
