@@ -1,24 +1,29 @@
-export async function createPayPalOrder(amount: number) {
-  const response = await fetch('/api/paypal/create-order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ amount }),
-  });
+export function loadPayPalScript(clientId: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (window.paypal) {
+      resolve();
+      return;
+    }
 
-  const data = await response.json();
-  return data.orderID;
+    const script = document.createElement('script');
+    script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
+    script.async = true;
+    script.onload = () => {
+      if (window.paypal) {
+        resolve();
+      } else {
+        reject(new Error('PayPal SDK loaded but window.paypal is undefined'));
+      }
+    };
+    script.onerror = () => {
+      reject(new Error('Failed to load PayPal SDK script'));
+    };
+
+    document.body.appendChild(script);
+  });
 }
 
-export async function capturePayPalPayment(orderID: string) {
-  const response = await fetch('/api/paypal/capture-order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ orderID }),
-  });
 
-  const data = await response.json();
-  return data;
-}
 
 
 

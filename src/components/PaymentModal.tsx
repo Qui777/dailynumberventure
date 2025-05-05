@@ -28,19 +28,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   useEffect(() => {
     loadPayPalScript(import.meta.env.VITE_PAYPAL_CLIENT_ID)
       .then(() => {
-        if (window.paypal) {
-          console.log('✅ PayPal SDK loaded properly');
-        } else {
-          console.error('⚠️ PayPal SDK loaded but window.paypal is undefined');
-          showPaymentErrorToast();
-        }
+        console.log('✅ PayPal SDK loaded');
       })
       .catch((err) => {
-        console.error('❌ PayPal SDK failed to load:', err);
-        showPaymentErrorToast();
+        console.error('❌ PayPal failed to load:', err);
+        showPaymentErrorToast(null);
       });
   }, []);
-  
 
   const handleApprove = (data: any, actions: any) => {
     return actions.order.capture().then(() => {
@@ -56,29 +50,23 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">Complete Payment</h2>
-        <p className="mb-4">
-          You’re entering the {selectedRange[0]}–{selectedRange[1]} game.
-        </p>
-        <div className="mb-4">
-          <PayPalButtons
-            style={{ layout: 'vertical' }}
-            createOrder={(data, actions) =>
-              actions.order.create({
-                purchase_units: [
-                  {
-                    amount: {
-                      value: amount.toFixed(2),
-                    },
+      <div className="bg-white p-6 rounded shadow">
+        <h2 className="text-xl font-bold mb-4">Secure Payment</h2>
+        <PayPalButtons
+          createOrder={(data, actions) => {
+            return actions.order.create({
+              purchase_units: [
+                {
+                  amount: {
+                    value: amount.toFixed(2),
                   },
-                ],
-              })
-            }
-            onApprove={handleApprove}
-            onError={handleError}
-          />
-        </div>
+                },
+              ],
+            });
+          }}
+          onApprove={handleApprove}
+          onError={handleError}
+        />
         <button
           className="mt-4 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
           onClick={onClose}
@@ -91,3 +79,4 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
