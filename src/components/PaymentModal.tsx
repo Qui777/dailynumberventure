@@ -28,13 +28,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   useEffect(() => {
     loadPayPalScript(import.meta.env.VITE_PAYPAL_CLIENT_ID)
       .then(() => {
-        console.log('✅ PayPal SDK loaded');
+        if (window.paypal) {
+          console.log('✅ PayPal SDK loaded properly');
+        } else {
+          console.error('⚠️ PayPal SDK loaded but window.paypal is undefined');
+          showPaymentErrorToast();
+        }
       })
       .catch((err) => {
-        console.error('❌ PayPal failed to load:', err);
-        showPaymentErrorToast(null);
+        console.error('❌ PayPal SDK failed to load:', err);
+        showPaymentErrorToast();
       });
   }, []);
+  
 
   const handleApprove = (data: any, actions: any) => {
     return actions.order.capture().then(() => {
