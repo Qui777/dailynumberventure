@@ -66,7 +66,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
           />
         </PayPalScriptProvider>
-        <PayPalScriptProvider options={{ clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID }}>
+        <PayPalScriptProvider options={{ clientId: "ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG9877RhtzuluR6_gtu-q3wllmvq55710ALYw" }}>
+
   <PayPalButtons
     style={{ layout: 'vertical' }}
     createOrder={(data, actions) => {
