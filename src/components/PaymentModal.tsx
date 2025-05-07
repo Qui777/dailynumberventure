@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import { showPaymentSuccessToast, showPaymentErrorToast } from '@/utils/paymentToastUtils';
 import { loadPayPalScript } from '@/utils/paymentUtils';
@@ -18,7 +18,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   email,
   selectedRange,
 }) => {
-
   useEffect(() => {
     loadPayPalScript(import.meta.env.VITE_PAYPAL_CLIENT_ID)
       .then(() => {
@@ -29,10 +28,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         showPaymentErrorToast(null);
       });
   }, []);
-  
+
   if (!isOpen) return null;
 
-  const amount = '2.00'; // Set to your amount
+  const amount = '2.00';
   const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
   return (
@@ -61,40 +60,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               });
             }}
             onError={(err) => {
-              console.error('Payment error:', err);
+              console.error('❌ Payment error:', err);
               showPaymentErrorToast(null);
             }}
           />
         </PayPalScriptProvider>
-        <PayPalScriptProvider options={{ clientId: "ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG9877RhtzuluR6_gtu-q3wllmvq55710ALYw" }}>
-
-  <PayPalButtons
-    style={{ layout: 'vertical' }}
-    createOrder={(data, actions) => {
-      return actions.order.create({
-        purchase_units: [{
-          amount: {
-            value: '2.00',
-          },
-        }],
-      });
-    }}
-    onApprove={(data, actions) => {
-      return actions.order!.capture().then(() => {
-        showPaymentSuccessToast(null);
-        onClose();
-      });
-    }}
-    onError={(err) => {
-      console.error('❌ Payment error:', err);
-      showPaymentErrorToast(null);
-    }}
-  />
-</PayPalScriptProvider>
-
-<button className="mt-4 text-sm text-gray-500" onClick={onClose}>
-  Cancel
-</button>
 
         <button className="mt-4 text-sm text-gray-500" onClick={onClose}>
           Cancel
@@ -105,5 +75,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
 
 
