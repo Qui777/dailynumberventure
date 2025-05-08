@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import { PayPalButtons } from '@paypal/react-paypal-js';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -33,6 +33,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
     script.async = true;
     script.onload = () => setSdkReady(true);
     document.body.appendChild(script);
+
+    // ✅ FIX: Avoid removeChild crash
+    return () => {
+      if (script && script.parentNode) {
+        script.parentNode.removeChild(script);
+      }
+    };
   }, [isOpen]);
 
   if (!isOpen) return null;
