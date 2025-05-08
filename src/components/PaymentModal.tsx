@@ -21,30 +21,22 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    const existingScript = document.querySelector('#paypal-sdk');
-    if (existingScript) {
+    if (document.getElementById('paypal-sdk')) {
       setSdkReady(true);
       return;
     }
 
     const script = document.createElement('script');
     script.id = 'paypal-sdk';
-    script.src = `https://www.paypal.com/sdk/js?client-id=ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG9877RhtzuluR6_gtu-q3wllmvq55710ALYw&currency=USD`;
+    script.src = "https://www.paypal.com/sdk/js?client-id=ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG9877RhtzuluR6_gtu-q3wllmvq55710ALYw&currency=USD";
     script.async = true;
     script.onload = () => setSdkReady(true);
     document.body.appendChild(script);
-
-    // ✅ FIX: Avoid removeChild crash
-    return () => {
-      if (script && script.parentNode) {
-        script.parentNode.removeChild(script);
-      }
-    };
   }, [isOpen]);
 
   if (!isOpen) return null;
 
-  const amount = '2.00';
+  const amount = "2.00";
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -67,22 +59,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
             onApprove={(data, actions) => {
               return actions.order!.capture().then(() => {
-                alert('Payment successful!');
+                alert("Payment successful!");
                 onClose();
               });
             }}
             onError={(err) => {
-              alert('PayPal error: ' + err.message);
+              alert("Payment failed: " + err.message);
             }}
           />
         ) : (
           <p>Loading PayPal...</p>
         )}
 
-        <button
-          className="mt-4 text-sm text-gray-500"
-          onClick={onClose}
-        >
+        <button onClick={onClose} className="mt-4 text-sm text-gray-500">
           Cancel
         </button>
       </div>
