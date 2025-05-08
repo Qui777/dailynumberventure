@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 interface PaymentModalProps {
@@ -14,12 +14,11 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   onClose,
   username,
   email,
-  selectedRange,
 }) => {
   if (!isOpen) return null;
 
   const amount = '2.00';
-  const clientId = "ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG9877RhtzuluR6_gtu-q3wllmvq55710ALYw"; // use your live client ID here
+  const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -42,19 +41,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
             onApprove={(data, actions) => {
               return actions.order!.capture().then(() => {
-                alert("✅ Payment successful!");
+                alert('✅ Payment successful!');
                 onClose();
               });
             }}
             onError={(err) => {
-              alert("❌ Payment failed: " + err.message);
-              console.error(err);
+              console.error('❌ Payment error:', err);
+              alert('❌ Payment failed. Please try again.');
             }}
           />
         </PayPalScriptProvider>
 
         <button
-          className="mt-4 text-sm text-gray-500"
+          className="mt-4 text-sm text-gray-500 hover:underline"
           onClick={onClose}
         >
           Cancel
@@ -65,6 +64,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
 
 
 
