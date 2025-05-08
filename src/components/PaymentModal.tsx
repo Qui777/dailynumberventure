@@ -1,6 +1,6 @@
-// Triggering redeploy with small update
 import React, { useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
+import { showPaymentSuccessToast, showPaymentErrorToast } from '@/utils/paymentToastUtils';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -15,6 +15,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   onClose,
   username,
   email,
+  selectedRange,
 }) => {
   if (!isOpen) return null;
 
@@ -41,22 +42,19 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
               });
             }}
             onApprove={(data, actions) => {
-              return actions.order!.capture().then(() => {
-                alert('✅ Payment successful!');
+              return actions.order.capture().then(() => {
+                showPaymentSuccessToast(null);
                 onClose();
               });
             }}
             onError={(err) => {
-              console.error('❌ Payment error:', err);
-              alert('❌ Payment failed. Please try again.');
+              console.error('❌ PayPal error:', err);
+              showPaymentErrorToast(null);
             }}
           />
         </PayPalScriptProvider>
 
-        <button
-          className="mt-4 text-sm text-gray-500 hover:underline"
-          onClick={onClose}
-        >
+        <button className="mt-4 text-sm text-gray-500" onClick={onClose}>
           Cancel
         </button>
       </div>
@@ -65,8 +63,6 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
-
-
 
 
 
