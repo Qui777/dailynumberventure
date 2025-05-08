@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { PayPalButtons } from '@paypal/react-paypal-js';
+import React from 'react';
+import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -16,27 +16,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   email,
   selectedRange,
 }) => {
-  const [sdkReady, setSdkReady] = useState(false);
-
-  useEffect(() => {
-    if (!isOpen) return;
-
-    if (document.getElementById('paypal-sdk')) {
-      setSdkReady(true);
-      return;
-    }
-
-    const script = document.createElement('script');
-    script.id = 'paypal-sdk';
-    script.src = "https://www.paypal.com/sdk/js?client-id=ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG9877RhtzuluR6_gtu-q3wllmvq55710ALYw&currency=USD";
-    script.async = true;
-    script.onload = () => setSdkReady(true);
-    document.body.appendChild(script);
-  }, [isOpen]);
-
   if (!isOpen) return null;
 
-  const amount = "2.00";
+  const amount = '2.00';
+  const clientId = "ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG9877RhtzuluR6_gtu-q3wllmvq55710ALYw"; // use your live client ID here
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -45,7 +28,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <p className="mb-2">Name: {username}</p>
         <p className="mb-4">Email: {email}</p>
 
-        {sdkReady ? (
+        <PayPalScriptProvider options={{ clientId }}>
           <PayPalButtons
             style={{ layout: 'vertical' }}
             createOrder={(data, actions) => {
@@ -59,19 +42,21 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
             onApprove={(data, actions) => {
               return actions.order!.capture().then(() => {
-                alert("Payment successful!");
+                alert("✅ Payment successful!");
                 onClose();
               });
             }}
             onError={(err) => {
-              alert("Payment failed: " + err.message);
+              alert("❌ Payment failed: " + err.message);
+              console.error(err);
             }}
           />
-        ) : (
-          <p>Loading PayPal...</p>
-        )}
+        </PayPalScriptProvider>
 
-        <button onClick={onClose} className="mt-4 text-sm text-gray-500">
+        <button
+          className="mt-4 text-sm text-gray-500"
+          onClick={onClose}
+        >
           Cancel
         </button>
       </div>
@@ -80,6 +65,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
 
 
 
