@@ -5,10 +5,16 @@ export function loadPayPalScript(clientId: string): Promise<void> {
       return;
     }
 
+    const existingScript = document.querySelector(`script[src*="paypal.com/sdk/js"]`);
+    if (existingScript) {
+      existingScript.addEventListener('load', () => resolve());
+      existingScript.addEventListener('error', (err) => reject(err));
+      return;
+    }
+
     const script = document.createElement('script');
     script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
     script.async = true;
-
     script.onload = () => {
       if (window.paypal) {
         resolve();
@@ -16,14 +22,11 @@ export function loadPayPalScript(clientId: string): Promise<void> {
         reject(new Error('PayPal SDK loaded but window.paypal is undefined'));
       }
     };
-
-    script.onerror = () => {
-      reject(new Error('Failed to load PayPal SDK script'));
-    };
-
+    script.onerror = (err) => reject(err);
     document.body.appendChild(script);
   });
 }
+
 
 
 
