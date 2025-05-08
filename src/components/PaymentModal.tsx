@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
 interface PaymentModalProps {
@@ -19,7 +19,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
   if (!isOpen) return null;
 
   const amount = "2.00";
-  const clientId = "YOUR-LIVE-PAYPAL-CLIENT-ID"; // Paste your real client ID here
+  const clientId = "YOUR-LIVE-CLIENT-ID"; // Replace with your actual live PayPal client ID
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -28,30 +28,29 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <p className="mb-2">Name: {username}</p>
         <p className="mb-2">Email: {email}</p>
 
-        <PayPalScriptProvider options={{ 'client-id': clientId, currency: 'USD' }}>
-          <PayPalButtons
-            style={{ layout: 'vertical' }}
-            createOrder={(data, actions) => {
-              return actions.order.create({
-                purchase_units: [
-                  {
-                    amount: { value: amount },
-                  },
-                ],
-              });
-            }}
-            onApprove={(data, actions) => {
-              return actions.order.capture().then((details) => {
-                alert('Payment successful!');
-                onClose();
-              });
-            }}
-            onError={(err) => {
-              console.error('PayPal error:', err);
-              alert('Something went wrong. Try again.');
-            }}
-          />
-        </PayPalScriptProvider>
+        <div id="paypal-button-container">
+          <PayPalScriptProvider options={{ 'client-id': clientId, currency: 'USD' }}>
+            <PayPalButtons
+              style={{ layout: 'vertical' }}
+              forceReRender={[amount]}
+              createOrder={(data, actions) => {
+                return actions.order.create({
+                  purchase_units: [{ amount: { value: amount } }],
+                });
+              }}
+              onApprove={(data, actions) => {
+                return actions.order.capture().then(() => {
+                  alert('✅ Payment successful!');
+                  onClose();
+                });
+              }}
+              onError={(err) => {
+                console.error('❌ PayPal error:', err);
+                alert('Something went wrong. Try again.');
+              }}
+            />
+          </PayPalScriptProvider>
+        </div>
 
         <button className="mt-4 text-sm text-gray-500" onClick={onClose}>
           Cancel
@@ -62,6 +61,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
 
 
 
