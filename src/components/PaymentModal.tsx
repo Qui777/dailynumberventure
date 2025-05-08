@@ -1,3 +1,4 @@
+// Triggering redeploy with small update
 import React, { useEffect } from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
