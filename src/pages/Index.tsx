@@ -1,52 +1,26 @@
 import React, { useState } from 'react';
 import PaymentModal from '@/components/PaymentModal';
 
-const Index = () => {
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [selectedRange, setSelectedRange] = useState<[number, number]>([1, 100]);
+const IndexPage: React.FC = () => {
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
 
   return (
-    <div className="p-6 max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Welcome to Daily Number Quest</h1>
-      <p className="mb-4">Test your luck and intuition with today’s number!</p>
-
-      <input
-        type="text"
-        placeholder="Enter your name"
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-        className="mb-2 border p-2 w-full"
-      />
-
-      <input
-        type="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="mb-4 border p-2 w-full"
-      />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <h1 className="text-3xl font-bold mb-6">Welcome to Daily Number Quest</h1>
 
       <button
-        onClick={() => setIsPaymentModalOpen(true)}
-        className="bg-blue-600 text-white px-4 py-2 rounded"
+        onClick={() => setIsPaymentOpen(true)}
+        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
       >
-        Start Game
+        Pay with PayPal
       </button>
 
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        username={username}
-        email={email}
-        selectedRange={selectedRange}
-      />
+      <PaymentModal isOpen={isPaymentOpen} onClose={() => setIsPaymentOpen(false)} />
     </div>
   );
 };
 
-export default Index;
+export default IndexPage;
 
 
 
