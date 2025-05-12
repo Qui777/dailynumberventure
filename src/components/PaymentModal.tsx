@@ -1,5 +1,5 @@
-import React from "react";
-import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import React from 'react';
+import { PayPalButtons, PayPalScriptProvider } from '@paypal/react-paypal-js';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -18,27 +18,24 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const amount = "2.00"; // Example price
+  const amount = '2.00';
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-sm shadow-lg relative">
-        <h2 className="text-xl font-bold mb-4">Pay with PayPal</h2>
+      <div className="bg-white p-6 rounded shadow max-w-sm w-full">
+        <h2 className="text-lg font-bold mb-4">Secure Payment</h2>
 
-        <PayPalScriptProvider
-          options={{
-            clientId: "ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG987TRzul...",
-            currency: "USD",
-          }}
-        >
+        <PayPalScriptProvider options={{ "client-id": "ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG987TRhtzuluR6_gtu-q3wllmvq55710ALYw" }}>
           <PayPalButtons
-            style={{ layout: "vertical" }}
+            style={{ layout: 'vertical' }}
+            forceReRender={[amount]}
+            fundingSource={undefined}
             createOrder={(data, actions) => {
               return actions.order.create({
                 purchase_units: [
                   {
                     amount: {
-                      value: amount,
+                      value: amount.toString(),
                     },
                   },
                 ],
@@ -46,29 +43,32 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
             onApprove={(data, actions) => {
               return actions.order.capture().then((details) => {
-                alert("Payment successful! Thank you, " + details.payer.name?.given_name);
+                alert(`Transaction completed by ${details.payer.name?.given_name}`);
                 onClose();
               });
             }}
+            onCancel={() => {
+              alert('Payment cancelled');
+              onClose();
+            }}
             onError={(err) => {
-              console.error("PayPal Error", err);
-              alert("Payment failed. Please try again.");
+              console.error('PayPal error:', err);
+              alert('Payment failed');
             }}
           />
         </PayPalScriptProvider>
-
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-black"
-        >
-          ×
-        </button>
       </div>
     </div>
   );
 };
 
 export default PaymentModal;
+
+
+
+
+
+
 
 
 
