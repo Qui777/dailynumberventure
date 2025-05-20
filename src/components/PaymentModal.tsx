@@ -37,6 +37,10 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) => {
                 onClose();
               });
             }}
+            onError={(err) => {
+              console.error("PayPal Error:", err);
+              alert("Payment failed.");
+            }}
           />
         </PayPalScriptProvider>
       </div>
@@ -45,6 +49,9 @@ const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose }) => {
 };
 
 export default PaymentModal;
+
+
+
 
 
 
