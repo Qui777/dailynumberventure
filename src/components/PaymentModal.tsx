@@ -1,4 +1,3 @@
-// src/components/PaymentModal.tsx
 import React from 'react';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 
@@ -19,8 +18,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const amount = '2.00';
-  const hardcodedClientId ="ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG987TRhtzuluR6_gtu-q3wllmvq55710ALYw";
+  const amount = '2.00'; // Change this if needed
+  const hardcodedClientId ="ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG987TRhtzuluR6_gtu-q3wllmvq55710ALYw"
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -29,28 +28,30 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <p className="mb-2">Name: {username}</p>
         <p className="mb-4">Email: {email}</p>
 
-        <PayPalScriptProvider options={{ clientId: hardcodedClientId }}>
+        <PayPalScriptProvider options={{ 'client-id': hardcodedClientId, currency: 'USD' }}>
           <PayPalButtons
-            style={{ layout: 'vertical' }}
+            style={{ layout: 'vertical', color: 'blue', shape: 'pill', label: 'pay' }}
             createOrder={(data, actions) => {
               return actions.order.create({
-                purchase_units: [{ amount: { value: amount } }],
+                purchase_units: [
+                  {
+                    amount: {
+                      value: amount,
+                    },
+                  },
+                ],
               });
             }}
             onApprove={(data, actions) => {
-              return actions.order.capture().then(() => {
+              return actions.order?.capture().then(() => {
                 alert('Payment successful!');
                 onClose();
               });
             }}
-            onError={(err) => {
-              console.error('❌ Payment error:', err);
-              alert('Payment failed!');
-            }}
           />
         </PayPalScriptProvider>
 
-        <button className="mt-4 text-sm text-gray-500" onClick={onClose}>
+        <button className="mt-4 text-sm text-blue-500" onClick={onClose}>
           Cancel
         </button>
       </div>
@@ -59,6 +60,7 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 };
 
 export default PaymentModal;
+
 
 
 
