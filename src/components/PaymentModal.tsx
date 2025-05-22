@@ -39,7 +39,13 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
         <p className="mb-2">Name: {username}</p>
         <p className="mb-4">Email: {email}</p>
 
-        <PayPalScriptProvider options={{ 'client-id': clientId, currency: 'USD' }}>
+        <PayPalScriptProvider options={{ 
+  clientId, 
+  currency: 'USD',
+  components: "buttons",
+  intent: "capture"
+}}>
+
           <PayPalButtons
             style={{ layout: 'vertical' }}
             createOrder={(data, actions) => {
