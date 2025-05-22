@@ -50,7 +50,8 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
             }}
             onApprove={(data, actions) => {
               return actions.order.capture().then((details) => {
-                alert("Payment complete by " + details.payer.name.given_name);
+                alert('Payment complete by ' + (details?.payer?.name?.given_name || 'Customer'));
+
               });
             }}
           />
