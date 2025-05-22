@@ -19,9 +19,16 @@ const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const amount = '2.00';
+  
   const clientId ="ASNm-GmSDNshcCMrZrmefE5_t0i9pXycBwfofRKZ_DApG987TRhtzuluR6_gtu-q3wllmvq55710ALYw"
+  let amount = '2.00';
 
+  if (selectedRange[1] === 500) {
+    amount = '5.00';
+  } else if (selectedRange[1] === 1000) {
+    amount = '10.00';
+  }
+  
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white p-6 rounded shadow max-w-sm w-full">
